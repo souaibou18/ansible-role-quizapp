@@ -1,11 +1,11 @@
 ---
-- name: Mettre à jour les paquets
+- name: Mise a jour des package
   ansible.builtin.package:
     name: '*'
     state: latest
     update_cache: yes
 
-- name: Installer git et curl
+- name: Installation de git et curl
   ansible.builtin.package:
     name:
       - git
@@ -34,7 +34,7 @@
     dest: "{{ app_directory }}"
     version: HEAD
 
-- name: Installer les dépendances npm
+- name: Installation des dépendances npm
   command: npm install
   args:
     chdir: "{{ app_directory }}"
