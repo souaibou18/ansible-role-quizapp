@@ -1,0 +1,11 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for Install_wordpress.sh
+app_git_repo: "https://github.com/franklin-tutorials/quiz-ansible.git"
+app_directory: "/opt/quiz-ansible"
+wp_site_dir: /var/www/html
+wp_db_name: wordpress
+wp_db_user: wordpressuser
+wp_db_password: wordpressPW
+wp_db_root_password: wordpressrootPW
+

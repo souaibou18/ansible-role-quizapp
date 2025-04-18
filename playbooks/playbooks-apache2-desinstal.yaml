@@ -1,0 +1,8 @@
+- name: Désinstallation du package Apache
+  hosts: localhost
+
+  tasks:
+    - name: Désinstaller Apache2
+      apt:
+        name: apache2
+        state: absent

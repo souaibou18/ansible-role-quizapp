@@ -1,0 +1,7 @@
+- name: shell
+  hosts: client1
+  become: yes
+
+  tasks:
+    - name: creation de fichier test1
+      shell: /root/script1.sh

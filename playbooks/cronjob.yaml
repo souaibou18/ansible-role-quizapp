@@ -1,0 +1,18 @@
+- name: planifier un job crontab
+  hosts: client1
+
+tasks:
+  - name: Installation de cron
+    apt:
+      name: cron
+      state: present
+
+  - name: Planifier l'execution de scritp1.sh
+    cron:
+    name: "tache scripte1"
+    minute: "10"
+    hours: "15"
+    weekday: "1"
+    job: "/root/script1.sh" 
+    command: apt-get update, apt-install cron
+  

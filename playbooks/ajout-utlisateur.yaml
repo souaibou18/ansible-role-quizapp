@@ -1,0 +1,8 @@
+- name: creation de l'utilisateur pierre
+  hosts: client1
+  become: true
+
+  tasks:
+    - name: ajout de l'utilisateur
+      user:
+        name:

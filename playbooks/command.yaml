@@ -1,0 +1,6 @@
+- name: Teste du module commande
+  hosts: client1
+
+  tasks:
+    - name: test commande
+    command: cat /etc/passwd | grep root

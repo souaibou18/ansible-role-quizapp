@@ -1,0 +1,102 @@
+- name: Mise à jour des paquets
+  package:
+    name: '*'
+    state: latest
+  when: ansible_os_family in ['Debian', 'RedHat']
+
+- name: Installer les paquets WordPress pour Ubuntu/Debian
+  apt:
+    name:
+      - apache2
+      - php
+      - libapache2-mod-php
+      - php-mysql
+      - mariadb-server
+      - wget
+      - unzip
+      - python3-pymysql
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Installer les paquets WordPress pour Rocky/RedHat
+  dnf:
+    name:
+      - httpd
+      - php
+      - php-mysqlnd
+      - mariadb-server
+      - wget
+      - unzip
+      - python3-PyMySQL
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Supprimer la page par défaut d'Apache
+  file:
+    path: "{{ wp_site_dir }}/index.html"
+    state: absent
+
+- name: Démarrer Apache sans systemd
+  shell: |
+    {% if ansible_os_family == "Debian" %}
+    service apache2 restart
+    {% else %}
+    /usr/sbin/httpd -DFOREGROUND &
+    {% endif %}
+  async: 20
+  poll: 0
+
+- name: Initialiser la base MariaDB si nécessaire
+  shell: |
+    mysql_install_db --user=mysql --datadir=/var/lib/mysql
+  args:
+    creates: /var/lib/mysql/mysql
+
+- name: Démarrer MariaDB sans systemd
+  shell: |
+    mysqld_safe --datadir=/var/lib/mysql &
+  async: 30
+  poll: 0
+
+- name: Attendre le démarrage de MariaDB
+  wait_for:
+    port: 3306
+    host: 127.0.0.1
+    state: started
+    delay: 15
+    timeout: 120
+
+- name: Définir le mot de passe root MariaDB
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ wp_db_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+
+- name: Créer la base et utilisateur WordPress
+  mysql_user:
+    login_user: root
+    login_password: "{{ wp_db_root_password }}"
+    name: "{{ wp_db_user }}"
+    password: "{{ wp_db_password }}"
+    priv: "{{ wp_db_name }}.*:ALL"
+    state: present
+
+- name: Créer la base de données WordPress
+  mysql_db:
+    login_user: root
+    login_password: "{{ wp_db_root_password }}"
+    name: "{{ wp_db_name }}"
+    state: present
+
+- name: Télécharger WordPress
+  get_url:
+    url: https://wordpress.org/latest.zip
+    dest: /tmp/latest.zip
+
+- name: Décompresser WordPress
+  unarchive:
+    src: /tmp/latest.zip
+    dest: "{{ wp_site_dir }}"
+    remote_src: yes

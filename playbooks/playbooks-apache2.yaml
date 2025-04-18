@@ -1,0 +1,16 @@
+- name: Installation du package Apache
+  hosts: localhost
+  become: yes  # Nécessaire pour installer des paquets avec apt et gérer les services
+
+  tasks:
+    - name: Installer Apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes  # Optionnel mais recommandé, surtout après une nouvelle installation
+
+    - name: Démarrer le service Apache2
+      service:
+        name: apache2
+        state: started
+        enabled: yes  # S'assure qu'Apache redémarre après un reboot

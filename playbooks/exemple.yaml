@@ -1,0 +1,8 @@
+---
+
+- name: Mon premier playbook
+  hosts: rocky
+
+  tasks: 
+  - name: Tester la connectivité
+    ping:

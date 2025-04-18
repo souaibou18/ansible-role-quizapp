@@ -1,0 +1,6 @@
+- name: Teste de la commande shell
+  hosts: client1
+
+tasks:
+  - name: exemple commande shell
+    command: cat /etc/passwd | grep root

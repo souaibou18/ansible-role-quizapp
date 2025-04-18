@@ -1,0 +1,6 @@
+- name: Déploiement complet de WordPress
+  hosts: all
+  become: yes
+
+  roles:
+    - Install_wordpress.sh

@@ -1,0 +1,58 @@
+---
+- name: Mettre à jour les paquets
+  ansible.builtin.package:
+    name: '*'
+    state: latest
+    update_cache: yes
+
+- name: Installer git et curl
+  ansible.builtin.package:
+    name:
+      - git
+      - curl
+    state: present
+
+- name: Télécharger le script Node.js
+  get_url:
+    url: "{{ nodejs_setup_script_url_debian if ansible_os_family == 'Debian' else nodejs_setup_script_url_redhat }}"
+    dest: /tmp/setup_node.sh
+    mode: '0755'
+
+- name: Exécuter le script Node.js
+  command: bash /tmp/setup_node.sh
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Installer nodejs
+  ansible.builtin.package:
+    name: nodejs
+    state: present
+
+- name: Cloner le dépôt de l'application
+  git:
+    repo: "{{ app_git_repo }}"
+    dest: "{{ app_directory }}"
+    version: HEAD
+
+- name: Installer les dépendances npm
+  command: npm install
+  args:
+    chdir: "{{ app_directory }}"
+
+- name: Compiler l'application
+  command: npm run build
+  args:
+    chdir: "{{ app_directory }}"
+
+- name: Installer 'serve' globalement
+  npm:
+    name: serve
+    global: yes
+    state: present
+
+- name: Lancer l'application en arrière-plan
+  shell: "nohup serve -s dist -l {{ app_port }} &"
+  args:
+    chdir: "{{ app_directory }}"
+  async: 3600
+  poll: 0
