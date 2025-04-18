@@ -1,3 +1,12 @@
 L'objectif est de creer un role ansible complet via un scripte sh qui fonctionne sur ubuntu ansi que rocky linux
 
 le role sera organiser de façon a que l'on puisse réutiliser 
+
+Objectif:
+Installation automatique d'Apache ou httpd, PHP, MariaDB
+Téléchargement et déploiement de WordPress depuis wordpress.org
+Configuration automatique de la base de données WordPress
+Génération sécurisée de wp-config.php
+Activation du VirtualHost Apache + module rewrite
+Support multi-distributions (Debian/RedHat)
+
